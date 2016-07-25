@@ -1,0 +1,7 @@
+*.dll
+bin/
+obj/
+packages/
+.vs/
+*.csproj.user
+*.nupkg
