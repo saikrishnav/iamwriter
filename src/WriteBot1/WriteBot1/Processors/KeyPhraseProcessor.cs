@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace TestBot1.Processors
+namespace WriteBot1.Processors
 {
     public class KeyPhraseProcessor : TextProcessor
     {
@@ -18,7 +18,7 @@ namespace TestBot1.Processors
 
         public override async Task<string> ProcessText(string text)
         {
-            BatchResult<KeyPhraseResult> br = await GetResponse<BatchResult<KeyPhraseResult>>(text);
+            var br = await GetResponse<BatchResult<KeyPhraseResult>>(text);
             return string.Join(" ", br.documents[0].KeyPhrases);
         }
     }

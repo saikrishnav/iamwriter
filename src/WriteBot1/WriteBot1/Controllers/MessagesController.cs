@@ -7,40 +7,18 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using Microsoft.Bot.Connector;
 using Newtonsoft.Json;
-using TestBot1.Processors;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Text;
+using WriteBot1.Thesaurus;
+using WriteBot1.Processors;
 
-namespace TestBot1
+namespace WriteBot1
 {
     [BotAuthentication]
+    //[RoutePrefix("v1/messages")]
     public class MessagesController : ApiController
     {
-        ///// <summary>
-        ///// POST: api/Messages
-        ///// Receive a message from a user and reply to it
-        ///// </summary>
-        //public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
-        //{
-        //    if (activity.Type == ActivityTypes.Message)
-        //    {
-        //        ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
-        //        // calculate something for us to return
-        //        int length = (activity.Text ?? string.Empty).Length;
-
-        //        // return our reply to the user
-        //        Activity reply = activity.CreateReply($"You sent {activity.Text} which was {length} characters");
-        //        await connector.Conversations.ReplyToActivityAsync(reply);
-        //    }
-        //    else
-        //    {
-        //        HandleSystemMessage(activity);
-        //    }
-        //    var response = Request.CreateResponse(HttpStatusCode.OK);
-        //    return response;
-        //}
-
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
             ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
@@ -52,12 +30,35 @@ namespace TestBot1
 
             // var processor = new SentimentProcessor();
             ITextProcessor processor = new KeyPhraseProcessor();
-            var kpResult = await processor.ProcessText(activity.Text);
+            var result = await processor.ProcessText(activity.Text);
+
+            // Create reply message
             var replyMessage = activity.CreateReply();
             replyMessage.Recipient = activity.From;
             replyMessage.Type = ActivityTypes.Message;
 
-            replyMessage.Text = kpResult;
+
+            var thesaurusClient = new ThesaurusClient();
+
+            string text = activity.Text;
+            var syncObject = new object();
+            var tasks = new List<Task>();
+            foreach (var word in result.Split(' '))
+            {
+                if (!string.IsNullOrEmpty(word))
+                {
+                    var synonym = await thesaurusClient.GetFirstSynonym(word);
+
+                    if (!string.IsNullOrEmpty(synonym))
+                    {
+                        text = text.Replace(word, synonym.Split(' ')[0]);
+                    }
+                }
+            }
+
+            Task.WaitAll(tasks.ToArray());
+
+            replyMessage.Text = text;
 
             await connector.Conversations.ReplyToActivityAsync(replyMessage);
             var response = Request.CreateResponse(HttpStatusCode.OK);

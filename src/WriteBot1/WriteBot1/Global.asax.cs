@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Routing;
 
-namespace TestBot1
+namespace WriteBot1
 {
     public class WebApiApplication : System.Web.HttpApplication
     {

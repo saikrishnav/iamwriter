@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace TestBot1.Processors
+namespace WriteBot1.Processors
 {
     public class SentimentProcessor : TextProcessor
     {
@@ -23,7 +23,7 @@ namespace TestBot1.Processors
 
         public override async Task<string> ProcessText(string text)
         {
-            BatchResult<SentimentResult> br = await GetResponse<BatchResult<SentimentResult>>(text);
+            var br = await GetResponse<BatchResult<SentimentResult>>(text);
             double sentimentScore = br.documents[0].score;
 
             string returnText = null;
