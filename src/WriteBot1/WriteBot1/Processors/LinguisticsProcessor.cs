@@ -10,7 +10,7 @@ using System.Web;
 
 namespace WriteBot1.Processors
 {
-    public class LinguisticsProcessor : TextProcessor
+    public class LinguisticsProcessor : TextProcessor<string>
     {
         private const string apiKey = "c8e03ecacdfb4bfba9e827398c48f4f8";
 
@@ -51,28 +51,27 @@ namespace WriteBot1.Processors
             var rawResponse = await post.Content.ReadAsStringAsync();
             //var result = JsonConvert.DeserializeObject<AnalyzeTextResult>(rawResponse);
 
-            int index = rawResponse.IndexOf("JJ");
-            var responseCharArray = rawResponse.ToCharArray();
+
+            int indexStart = rawResponse.IndexOf("22a6b758-420f-4745-8a3c-46835a67c0d2");
+            int indexEnd = rawResponse.IndexOf("08ea174b-bfdb-4e64-987e-602f85da7f72");
+
+            var substring = rawResponse.Substring(indexStart, indexEnd - indexStart);
 
             List<string> adjectives = new List<string>();
-            while(index > 0 && index < rawResponse.Length)
+            int adjIndex = 0;
+            while (adjIndex >= 0)
             {
-                index = index + 2;
-                var strBuilder = new StringBuilder();
-                while(responseCharArray[index] != ')')
+                adjIndex = substring.IndexOf("JJ");
+                if (adjIndex != -1)
                 {
-                    if (responseCharArray[index] != ' ')
-                    {
-                        strBuilder.Append(responseCharArray[index]);
-                    }
-                    index++;
-                }
-
-                if(string.IsNullOrEmpty(strBuilder.ToString()))
-                {
-                    adjectives.Add(strBuilder.ToString());
+                    substring = substring.Substring(adjIndex);
+                    var adjRB = substring.IndexOf(")");
+                    string adjective = substring.Substring(3, adjRB - 3);
+                    adjectives.Add(adjective);
+                    substring = substring.Substring(adjRB + 1);
                 }
             }
+
 
             return string.Join(" ", adjectives);
         }

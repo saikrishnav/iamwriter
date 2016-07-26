@@ -6,8 +6,8 @@ using System.Web;
 
 namespace WriteBot1.Processors
 {
-    public interface ITextProcessor
+    public interface ITextProcessor<T>
     {
-        Task<string> ProcessText(string text);
+        Task<T> ProcessText(string text);
     }
 }

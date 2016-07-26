@@ -10,7 +10,7 @@ using System.Web;
 
 namespace WriteBot1.Processors
 {
-    public abstract class TextProcessor : ITextProcessor
+    public abstract class TextProcessor<X> : ITextProcessor<X>
     {
         protected string QueryUri { get; private set; }
 
@@ -49,6 +49,6 @@ namespace WriteBot1.Processors
             return result;
         }
 
-        public abstract Task<string> ProcessText(string text);
+        public abstract Task<X> ProcessText(string text);
     }
 }

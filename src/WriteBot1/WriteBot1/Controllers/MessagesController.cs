@@ -28,9 +28,9 @@ namespace WriteBot1
                 //add code to handle errors, or non-messaging activities
             }
 
-            // var processor = new SentimentProcessor();
-            ITextProcessor processor = new KeyPhraseProcessor();
-            //ITextProcessor processor = new LinguisticsProcessor();
+            // Example Text: "White wicked witch locked the beautiful princess in a huge castle with a scary dragon"
+            //  var processor = new KeyPhraseProcessor();
+            var processor = new LinguisticsProcessor();
             var result = await processor.ProcessText(activity.Text);
 
             // Create reply message
@@ -38,26 +38,48 @@ namespace WriteBot1
             replyMessage.Recipient = activity.From;
             replyMessage.Type = ActivityTypes.Message;
 
+            string text = activity.Text;
+
             IThesaurusClient thesaurusClient = new BigHugeLabsClient();
 
-            string text = activity.Text;
-            var syncObject = new object();
+            string[] texts = new string[3] { text, text, text };          
+
             foreach (var word in result.Split(' '))
             {
                 if (!string.IsNullOrEmpty(word))
                 {
-                    var synonym = await thesaurusClient.GetFirstSynonym(word, WordContext.Adjective);
+                    var synonyms = await thesaurusClient.GetFirstSynonym(word, WordContext.Adjective);
 
-                    if (!string.IsNullOrEmpty(synonym))
+                    int index = 0;
+                    foreach (var newWord in synonyms.Split(' '))
                     {
-                        text = text.Replace(word, synonym);
+                        if (!string.IsNullOrEmpty(newWord))
+                        {
+                            texts[index] = texts[index].Replace(word, newWord);
+                        }
+                        index++;
                     }
                 }
             }
 
-            replyMessage.Text = text;
+            int nindex = 1;
+            bool changeFound = false;
+            foreach (var ntext in texts)
+            {
+                if (!string.Equals(ntext, text))
+                {
+                    changeFound = true;
+                    replyMessage.Text = "Option " + nindex++ + ": " + ntext;
+                    await connector.Conversations.ReplyToActivityAsync(replyMessage);
+                }
+            }
 
-            await connector.Conversations.ReplyToActivityAsync(replyMessage);
+            if(!changeFound)
+            {
+                replyMessage.Text = "[BOT INFO: No Suggestions Found!]";
+                await connector.Conversations.ReplyToActivityAsync(replyMessage);
+            }
+
             var response = Request.CreateResponse(HttpStatusCode.OK);
             return response;
         }

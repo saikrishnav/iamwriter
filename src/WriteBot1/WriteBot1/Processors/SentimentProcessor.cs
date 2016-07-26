@@ -11,7 +11,7 @@ using System.Web;
 
 namespace WriteBot1.Processors
 {
-    public class SentimentProcessor : TextProcessor
+    public class SentimentProcessor : TextProcessor<double>
     {
         const string apiKey = "fe87323859cd4b4ea533713b8b39d472";
 
@@ -21,26 +21,28 @@ namespace WriteBot1.Processors
         {
         }
 
-        public override async Task<string> ProcessText(string text)
+        public override async Task<double> ProcessText(string text)
         {
             var br = await GetResponse<BatchResult<SentimentResult>>(text);
             double sentimentScore = br.documents[0].score;
 
-            string returnText = null;
-            if (sentimentScore > 0.7)
-            {
-                returnText = $"That's great to hear!";
-            }
-            else if (sentimentScore < 0.3)
-            {
-                returnText = $"I'm sorry to hear that...";
-            }
-            else
-            {
-                returnText = $"I see...";
-            }
+            //string returnText = null;
+            //if (sentimentScore > 0.7)
+            //{
+            //    returnText = $"That's great to hear!";
+            //}
+            //else if (sentimentScore < 0.3)
+            //{
+            //    returnText = $"I'm sorry to hear that...";
+            //}
+            //else
+            //{
+            //    returnText = $"I see...";
+            //}
 
-            return returnText;
+            //return returnText;
+
+            return sentimentScore;
         }
     }
 }

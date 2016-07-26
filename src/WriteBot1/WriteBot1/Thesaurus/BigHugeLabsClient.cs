@@ -20,18 +20,22 @@ namespace WriteBot1.Thesaurus
         public async Task<string> GetFirstSynonym(string word, WordContext wordContext)
         {
             var response = await GetSynonymResult(word);
-            string synonym = null;
-            if (wordContext == WordContext.Adjective)
+            string synonym = "";
+
+            if (response != null)
             {
-                synonym = response.Adjective?.Syn?.FirstOrDefault();
-            }
-            else if (wordContext == WordContext.Adverb)
-            {
-                synonym = response.Adverb?.Syn?.FirstOrDefault();
-            }
-            else if (wordContext == WordContext.Verb)
-            {
-                synonym = response.Verb?.Syn?.FirstOrDefault();
+                if (wordContext == WordContext.Adjective)
+                {
+                    synonym = GetWordFromContext(response.Adjective);
+                }
+                else if (wordContext == WordContext.Adverb)
+                {
+                    synonym = GetWordFromContext(response.Adverb);
+                }
+                else if (wordContext == WordContext.Verb)
+                {
+                    synonym = GetWordFromContext(response.Verb);
+                }
             }
 
             return synonym; 
@@ -41,6 +45,30 @@ namespace WriteBot1.Thesaurus
         {
             var str = await GetFirstSynonym(word, WordContext.Verb);
             return str;
+        }
+
+        private string GetWordFromContext(TypeResult typeResult)
+        {
+            List<string> strings = new List<string>();
+            var relString = typeResult?.Rel?.FirstOrDefault();
+            if (!string.IsNullOrEmpty(relString))
+             {
+                strings.Add(relString);
+            }
+
+            relString = typeResult?.Sim?.FirstOrDefault();
+            if (!string.IsNullOrEmpty(relString))
+            {
+                strings.Add(relString);
+            }
+
+            relString = typeResult?.Syn?.FirstOrDefault();
+            if (!string.IsNullOrEmpty(relString))
+            {
+                strings.Add(relString);
+            }
+
+            return string.Join(" ", strings);
         }
 
         private async Task<Response> GetSynonymResult(string word)
@@ -82,5 +110,6 @@ namespace WriteBot1.Thesaurus
         public string[] Syn { get; set; }
         public string[] Sim { get; set; }
         public string[] Ant { get; set; }
+        public string[] Rel { get; set; }
     }
 }

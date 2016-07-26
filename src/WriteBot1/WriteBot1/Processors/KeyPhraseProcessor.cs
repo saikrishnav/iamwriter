@@ -6,7 +6,7 @@ using System.Web;
 
 namespace WriteBot1.Processors
 {
-    public class KeyPhraseProcessor : TextProcessor
+    public class KeyPhraseProcessor : TextProcessor<string>
     {
         const string apiKey = "fe87323859cd4b4ea533713b8b39d472";
 
