@@ -10,7 +10,7 @@ using System.Web;
 
 namespace WriteBot1.Thesaurus
 {
-    public class ThesaurusClient
+    public class AlterVistaClient : IThesaurusClient
     {
         private const string Endpoint = "http://thesaurus.altervista.org/thesaurus/v1";
 
@@ -42,28 +42,33 @@ namespace WriteBot1.Thesaurus
                 Console.WriteLine(ex);
             }
 
-            return synonym;
+            return synonym.Split(' ')[0];
         }
-    }
 
-    public class Response
-    {
-        public ListCollection response;
-    }
+        public Task<string> GetFirstSynonym(string word, WordContext wordContext)
+        {
+            throw new NotImplementedException();
+        }
 
-    public class ListCollection : List<ListFoo>
-    {
-    }
+        public class Response
+        {
+            public ListCollection response;
+        }
 
-    public class ListFoo
-    {
-        public List list { get; set; }
-    }
+        public class ListCollection : List<ListFoo>
+        {
+        }
 
-    public class List
-    {
-        public string category { get; set; }
+        public class ListFoo
+        {
+            public List list { get; set; }
+        }
 
-        public string synonyms { get; set; }
+        public class List
+        {
+            public string category { get; set; }
+
+            public string synonyms { get; set; }
+        }
     }
 }

@@ -126,10 +126,13 @@
     <Compile Include="Processors\BatchInput.cs" />
     <Compile Include="Processors\ITextProcessor.cs" />
     <Compile Include="Processors\KeyPhraseProcessor.cs" />
+    <Compile Include="Processors\LinguisticsProcessor.cs" />
     <Compile Include="Processors\SentimentProcessor.cs" />
     <Compile Include="Processors\TextProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Thesaurus\ThesaurusClient.cs" />
+    <Compile Include="Thesaurus\AlterVistaClient.cs" />
+    <Compile Include="Thesaurus\BigHugeLabsClient.cs" />
+    <Compile Include="Thesaurus\IThesaurusClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">

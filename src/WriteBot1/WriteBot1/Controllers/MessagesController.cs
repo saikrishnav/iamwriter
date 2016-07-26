@@ -30,6 +30,7 @@ namespace WriteBot1
 
             // var processor = new SentimentProcessor();
             ITextProcessor processor = new KeyPhraseProcessor();
+            //ITextProcessor processor = new LinguisticsProcessor();
             var result = await processor.ProcessText(activity.Text);
 
             // Create reply message
@@ -37,26 +38,22 @@ namespace WriteBot1
             replyMessage.Recipient = activity.From;
             replyMessage.Type = ActivityTypes.Message;
 
-
-            var thesaurusClient = new ThesaurusClient();
+            IThesaurusClient thesaurusClient = new BigHugeLabsClient();
 
             string text = activity.Text;
             var syncObject = new object();
-            var tasks = new List<Task>();
             foreach (var word in result.Split(' '))
             {
                 if (!string.IsNullOrEmpty(word))
                 {
-                    var synonym = await thesaurusClient.GetFirstSynonym(word);
+                    var synonym = await thesaurusClient.GetFirstSynonym(word, WordContext.Adjective);
 
                     if (!string.IsNullOrEmpty(synonym))
                     {
-                        text = text.Replace(word, synonym.Split(' ')[0]);
+                        text = text.Replace(word, synonym);
                     }
                 }
             }
-
-            Task.WaitAll(tasks.ToArray());
 
             replyMessage.Text = text;
 
