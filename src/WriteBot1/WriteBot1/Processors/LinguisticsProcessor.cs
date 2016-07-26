@@ -58,11 +58,21 @@ namespace WriteBot1.Processors
             var substring = rawResponse.Substring(indexStart, indexEnd - indexStart);
 
             List<string> adjectives = new List<string>();
+
             int adjIndex = 0;
-            while (adjIndex >= 0)
+            int[] adjIndexes = new int[2];
+            while (adjIndex >= 0 && adjIndex != indexEnd)
             {
-                adjIndex = substring.IndexOf("JJ");
-                if (adjIndex != -1)
+                adjIndexes[0] = substring.IndexOf("JJ");
+                adjIndexes[1] = substring.IndexOf("RB");
+                int minIndex = indexEnd;
+                foreach (var index in adjIndexes)
+                {
+                    if (index != -1)
+                        minIndex = Math.Min(minIndex, index);
+                }
+                adjIndex = minIndex;
+                if (adjIndex != -1 && adjIndex != indexEnd)
                 {
                     substring = substring.Substring(adjIndex);
                     var adjRB = substring.IndexOf(")");
@@ -71,7 +81,6 @@ namespace WriteBot1.Processors
                     substring = substring.Substring(adjRB + 1);
                 }
             }
-
 
             return string.Join(" ", adjectives);
         }
